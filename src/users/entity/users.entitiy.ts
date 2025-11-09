@@ -1,17 +1,19 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity('users')
-@Unique(['googleId', 'username'])
 export class User {
 
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column()
-    googleId: number
+    @Column({unique: true})
+    googleId: string
 
-    @Column()
+    @Column({unique: true})
     username: string
+
+    @Column({unique: true})
+    email: string
 
     @Column()
     profilePicture: string

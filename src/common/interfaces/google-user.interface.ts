@@ -1,8 +1,8 @@
 export interface IGoogleProfile {
     id: string;
     displayName: string;
-    emails?: { value: string; verified?: boolean }[];
-    photos?: { value: string }[];
+    emails: [{ value: string; verified: boolean }];
+    photos: [{ value: string }];
     provider: string;
     _raw: string;
     _json: {

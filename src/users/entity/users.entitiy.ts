@@ -8,7 +8,7 @@ export class User {
     id: number
 
     @Column()
-    googleId: string
+    googleId: number
 
     @Column()
     username: string

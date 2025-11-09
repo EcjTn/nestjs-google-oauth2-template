@@ -22,4 +22,8 @@ export class UsersService {
         }
     }
 
+    public save(user: User): Promise<User> {
+        return this.userRepo.save(user)
+    }
+
 }

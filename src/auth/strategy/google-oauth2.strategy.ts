@@ -25,19 +25,24 @@ export class GoogleOAuth2Strategy extends PassportStrategy(GoogleStrategy) {
         const email = profile.emails[0].value
         const profilePicture = profile.photos[0].value
 
+
+        const payload = {googleId, username, email, profilePicture}
+
         const userRecord = await this.usersService.findByGoogleId(profile.id)
+
         if(!userRecord) {
             await this.usersService.addGoogleUser(username, profilePicture, googleId, email)
         }
-
-        const payload = {
-            googleId,
-            username,
-            email,
-            profilePicture
+        else{
+            //Syncing existing user info
+            userRecord.username = username
+            userRecord.email = email
+            userRecord.profilePicture = profilePicture
+            await this.usersService.save(userRecord)
         }
 
-        done(null, payload)
+
+        return done(null, payload)
 
     }
 

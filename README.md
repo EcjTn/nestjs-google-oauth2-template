@@ -8,6 +8,7 @@ Includes only **Auth** and **Users** modules for clarity and easy integration in
 ## Features
 
 - Google OAuth2 login with Passport.js
+- Basic JWT signing
 - User management with TypeORM
 - Minimal setup: Auth & Users modules only
 - Easily extendable for larger NestJS projects

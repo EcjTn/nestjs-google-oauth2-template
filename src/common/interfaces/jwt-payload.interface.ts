@@ -2,5 +2,5 @@
 //is because some modules may need to use it soon
 export interface IJwtPayload {
     sub: number
-    role: string
+    googleId: string
 }

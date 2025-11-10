@@ -1,4 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { IUserPayload } from './interfaces/user-payload.interface';
+import { IJwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 
 @Injectable()
-export class AuthService {}
+export class AuthService {
+
+    constructor(private readonly jwtService: JwtService){}
+
+    public async generateAccessToken(user: IUserPayload){
+        try{
+            const jwyPayload: IJwtPayload = {sub: user.id, googleId: user.googleId}
+            const token = await this.jwtService.signAsync(jwyPayload)
+
+            return {accessToken: token, user}
+
+        }catch(e) {
+            console.log("GenerateToken Error:", e)
+            throw new InternalServerErrorException()
+        }
+    }
+
+}

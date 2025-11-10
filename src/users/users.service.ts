@@ -12,10 +12,10 @@ export class UsersService {
         return this.userRepo.findOne({where: {googleId: id}})
     }
 
-    public async addGoogleUser(username: string, profilePicture: string, googleId: string, email: string){
+    public addGoogleUser(username: string, profilePicture: string, googleId: string, email: string){
         try{
             const newGoogleUser = this.userRepo.create({googleId, username, profilePicture, email})
-            await this.userRepo.save(newGoogleUser)
+            return this.userRepo.save(newGoogleUser)
         }catch(e){
             console.log(e)
             throw new InternalServerErrorException()

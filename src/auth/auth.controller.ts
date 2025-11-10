@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
 import { GoogleAuthGuard } from './guards/google.guard';
 import type { Request } from 'express';
+import { IUserPayload } from './interfaces/user-payload.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -16,8 +17,7 @@ export class AuthController {
   @Get('/google/callback')
   @UseGuards(GoogleAuthGuard)
   public async googleCallback(@Req() req: Request) {
-    const user = req.user as any
-    return {message: `Welcome ${user.username}`}
+    return {message: 'Welcome!', info: req.user}
   }
 
 }

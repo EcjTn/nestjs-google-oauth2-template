@@ -1,10 +1,10 @@
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { PassportStrategy } from "@nestjs/passport"
 import { ConfigService } from '@nestjs/config'
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { IGoogleProfile } from 'src/common/interfaces/google-user.interface'
-import { VerifyCallback } from 'passport-google-oauth20';
 import { UsersService } from 'src/users/users.service'
+import { IUserPayload } from '../interfaces/user-payload.interface'
 
 @Injectable()
 export class GoogleOAuth2Strategy extends PassportStrategy(GoogleStrategy) {
@@ -19,30 +19,45 @@ export class GoogleOAuth2Strategy extends PassportStrategy(GoogleStrategy) {
     }
 
 
-    public async validate(accessToken: string, refreshToken: string, profile: IGoogleProfile, done: VerifyCallback) {
-        const googleId = profile.id
-        const username = profile.displayName
-        const email = profile.emails[0].value
-        const profilePicture = profile.photos[0].value
+    public async validate(accessToken: string, refreshToken: string, profile: IGoogleProfile) {
 
+        try{
+            const googleId = profile.id
+            const username = profile.displayName
+            const email = profile.emails[0].value
+            const profilePicture = profile.photos[0].value
+    
+    
+            const payload = {googleId, username, email, profilePicture}
+    
+            let userRecord = await this.usersService.findByGoogleId(profile.id)
+    
+            if(!userRecord) {
+                userRecord = await this.usersService.addGoogleUser(username, profilePicture, googleId, email)
+            }
+            else{
+                //Syncing existing user info
+                userRecord.username = username
+                userRecord.email = email
+                userRecord.profilePicture = profilePicture
+                await this.usersService.save(userRecord)
+            }
 
-        const payload = {googleId, username, email, profilePicture}
+            const userPayload: IUserPayload = {
+                id: userRecord.id,
+                googleId: userRecord.googleId,
+                username: userRecord.username,
+                email: userRecord.email,
+                profilePicture: userRecord.profilePicture
+            }
 
-        const userRecord = await this.usersService.findByGoogleId(profile.id)
+            //Return here becomes req.user
+            return userPayload
 
-        if(!userRecord) {
-            await this.usersService.addGoogleUser(username, profilePicture, googleId, email)
+        }catch(e){
+            console.log("Google auth failed", e)
+            throw new InternalServerErrorException()
         }
-        else{
-            //Syncing existing user info
-            userRecord.username = username
-            userRecord.email = email
-            userRecord.profilePicture = profilePicture
-            await this.usersService.save(userRecord)
-        }
-
-
-        return done(null, payload)
 
     }
 

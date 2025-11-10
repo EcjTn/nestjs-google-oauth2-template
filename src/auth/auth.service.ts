@@ -11,9 +11,9 @@ export class AuthService {
     public async generateAccessToken(user: IUserPayload){
         try{
             const jwyPayload: IJwtPayload = {sub: user.id, googleId: user.googleId}
-            const token = await this.jwtService.signAsync(jwyPayload)
+            const accessToken = await this.jwtService.signAsync(jwyPayload)
 
-            return {accessToken: token, user}
+            return {accessToken, user}
 
         }catch(e) {
             console.log("GenerateToken Error:", e)
